@@ -12,6 +12,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - uses: smallstep/action-install-step-cli@main
       - name: Bootstrap our dogfood CA
         uses: smallstep/action-smallstep-ca-bootstrap@main
         with:
