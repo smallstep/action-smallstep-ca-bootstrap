@@ -1,0 +1,43 @@
+# SPDX-License-Identifier: MIT
+#
+# Copyright (c) 2023 Smallstep Labs, Inc <techadmin@smallstep.com> All Rights Reserved.
+
+name: "action-smallstep-ca-bootstrap"
+description: "Bootstraps your CA on your GitHub Action so it can use use your PKI."
+branding:
+  icon: "terminal"
+  color: "red"
+inputs:
+  smallstep-ca-url:
+    description: "Your smallstep.com CA URL."
+    required: true
+  smallstep-ca-fingerprint:
+    description: "Your smallstep.com CA Fingerprint."
+    required: true
+  smallstep-cli-context:
+    description: "The step CLI context to use."
+
+runs:
+    using: "composite"
+    steps:
+      - name: Verify required inputs are set
+        id: verify-required-inputs
+        if: ${{ inputs.smallstep-ca-url == '' || inputs.smallstep-ca-fingerprint == '' }}
+        shell: bash
+        run: |
+          echo "One of the following inputs are not set: smallstep-ca-url, smallstep-ca-fingerprint. Ensure you have added them as Variables for your workflow. See https://docs.github.com/en/actions/learn-github-actions/variables"
+          exit 1
+
+      - name: Bootstrap your CA without a step CLI context
+        id: bootstrap-ca-no-context
+        if: ${{ ! inputs.smallstep-cli-context }}
+        shell: bash
+        run: |
+          sudo -E step ca bootstrap --ca-url ${{ inputs.smallstep-ca-url }} --fingerprint ${{ inputs.smallstep-ca-fingerprint }} --install
+
+      - name: Bootstrap your CA with a step CLI context
+        id: bootstrap-ca-context
+        if: ${{ inputs.smallstep-cli-context }}
+        shell: bash
+        run: |
+          sudo -E step ca bootstrap --ca-url ${{ inputs.smallstep-ca-url }} --fingerprint ${{ inputs.smallstep-ca-fingerprint }} --context ${{ inputs.smallstep-cli-context }} --install

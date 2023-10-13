@@ -1,0 +1,24 @@
+name: smallstep-ca-bootstrap
+
+on:
+  push:
+    tags-ignore:
+    - 'v*'
+    branches:
+    - "main"
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bootstrap our dogfood CA
+        uses: smallstep/action-smallstep-ca-bootstrap@main
+        with:
+          smallstep-ca-url: ${{ vars.SMALLSTEP_CA_URL }}
+          smallstep-ca-fingerprint: ${{ vars.SMALLSTEP_CA_FINGERPRINT }}
+          smallstep-cli-context: smallstep
+
+      - name: Test the PKI
+        shell: bash
+        run: curl https://cms.step.plumbing
