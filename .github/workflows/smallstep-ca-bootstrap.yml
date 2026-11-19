@@ -22,4 +22,4 @@ jobs:
 
       - name: Test the PKI
         shell: bash
-        run: curl https://cms.step.plumbing
+        run: curl --fail "${{ vars.SMALLSTEP_CA_URL }}/health"
